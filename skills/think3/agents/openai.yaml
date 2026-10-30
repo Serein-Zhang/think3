@@ -4,4 +4,4 @@ interface:
   default_prompt: "使用 $think3 复盘当前阶段，依据实际结果找出值得保留、改变或停止的做法，并给出必要的下一步；需要持续跟进时使用项目内的本地记录。"
 
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true
