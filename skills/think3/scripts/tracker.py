@@ -158,6 +158,18 @@ def validate_file_identity(path: Path) -> None:
         raise TrackerError("invalid_store", "The file is not a think3 tracker database; it was not modified.")
 
 
+def needs_read_recovery(exc: BaseException, path: Path) -> bool:
+    if not isinstance(exc, sqlite3.OperationalError):
+        return False
+    code = getattr(exc, "sqlite_errorcode", None)
+    if code is not None:
+        return code == getattr(sqlite3, "SQLITE_READONLY_ROLLBACK", 776)
+    # Python 3.10 does not expose SQLite's extended error code. Keep its
+    # fallback narrow: the read needs a write and a rollback journal exists.
+    return (str(exc) == "attempt to write a readonly database"
+            and Path(str(path) + "-journal").is_file())
+
+
 @contextmanager
 def connect(path: Path, *, write: bool = False, validate: bool = True):
     if not path.is_file():
@@ -174,9 +186,16 @@ def connect(path: Path, *, write: bool = False, validate: bool = True):
             validate_database(db)
         yield db
         db.execute("COMMIT")
-    except BaseException:
+    except BaseException as exc:
         if db.in_transaction:
             db.execute("ROLLBACK")
+        if not write and needs_read_recovery(exc, path):
+            raise TrackerError(
+                "recovery_required",
+                "The existing tracker needs rollback recovery before it can be read. "
+                "Run init with the same --store path, then retry this read. "
+                "Do not delete the database or its journal; init preserves committed records.",
+            ) from exc
         raise
     finally:
         db.close()
