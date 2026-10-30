@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "filename": "吾日三省吾身_think3_1.0.0.zip",
+  "sha256": "e21078de9c246b36fc4767aba10a43dc79963090ee85eb71a838920bdef4530a",
+  "bytes": 14989,
+  "original_archive": true,
+  "historical_archive_sha256": "e21078de9c246b36fc4767aba10a43dc79963090ee85eb71a838920bdef4530a",
+  "files": {
+    "agents/openai.yaml": "753fbd52a94110349b9889519803e2522a47547b2cc9a77a744d1a3c2c3b9992",
+    "assets/learning-card.md": "890e11c859ad776febed55c4f9dea0ab8a1ee0f047d11a9e90df5683ee31669b",
+    "assets/retrospective.md": "1cd6fccf75260d401628c5c2efd97b3ea2e2be8d34e661f385c32e031c2c66d6",
+    "references/cross-project-review.md": "869ccd677b4f995fc1b3c28f33037f2df63c9040ce7e4e3976bc1b0843276934",
+    "references/learning-rules.md": "a4247554f9b7efd17a0703241d8c12673cf22ea8a1a14e8b8b36dc9a2c37b750",
+    "references/transfer-examples.md": "ddef17637bdf9c35014459bb5154e2bf8b77d8d634d23bdb680ca34e0bef77b7",
+    "SKILL.md": "4f572b8283ba64d5c4875aa74d596f5a5c8822cb3d0ed01c64e9cda8a9ddebec"
+  },
+  "recorded_at_utc": "2026-10-30T10:19:02+00:00",
+  "recorded_at_america_new_york": "2026-10-30T06:19:02-04:00",
+  "time_basis": "original_git_baseline_commit",
+  "time_note": "原始提供包的本地 Git 保存时间；原始创作时间未知",
+  "original_git_commit": "376839db08d103cc93ff0e688ac3fdb110eb46ea",
+  "original_development_timestamp_known": false,
+  "original_creation_time_unknown": true,
+  "recovery_imported_at_utc": "2026-11-01T09:54:44.614170+00:00",
+  "files_verified_against_historical_evidence": true
+}
