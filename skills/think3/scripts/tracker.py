@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import sqlite3
 import sys
+import tempfile
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from uuid import uuid4
@@ -146,10 +147,23 @@ def validate_database(db: sqlite3.Connection) -> None:
             raise TrackerError("invalid_store", f"Invalid {table} schema; the database was not modified.")
 
 
+def validate_file_identity(path: Path) -> None:
+    # SQLite can recover a hot journal before the first PRAGMA query. Read the
+    # stable application marker without SQLite so a foreign file stays untouched.
+    # https://www.sqlite.org/fileformat.html#application_id
+    with path.open("rb") as source:
+        header = source.read(100)
+    if (len(header) != 100 or header[:16] != b"SQLite format 3\x00"
+            or int.from_bytes(header[68:72], "big") != APPLICATION_ID):
+        raise TrackerError("invalid_store", "The file is not a think3 tracker database; it was not modified.")
+
+
 @contextmanager
 def connect(path: Path, *, write: bool = False, validate: bool = True):
     if not path.is_file():
         raise TrackerError("store_not_found", "Store does not exist or is not a file. Run init with an explicit project path first.")
+    if validate:
+        validate_file_identity(path)
     mode = "rw" if write else "ro"
     db = sqlite3.connect(path.as_uri() + "?mode=" + mode, uri=True, timeout=10, isolation_level=None)
     db.row_factory = sqlite3.Row
@@ -186,22 +200,31 @@ def events(db: sqlite3.Connection, item_id: str | None = None) -> list[dict]:
 
 def initialize(path: Path) -> dict:
     if path.exists():
-        with connect(path):
+        with connect(path, write=True):
             return {"store": str(path), "schema_version": SCHEMA_VERSION, "created": False}
     path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        with path.open("xb"):
-            pass
-    except FileExistsError:
-        # Another process may have initialized the same path. Never replace it.
-        with connect(path):
-            return {"store": str(path), "schema_version": SCHEMA_VERSION, "created": False}
-    with connect(path, write=True, validate=False) as db:
-        for statement in SCHEMA:
-            db.execute(statement)
-        db.execute(f"PRAGMA application_id = {APPLICATION_ID}")
-        db.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
-        validate_database(db)
+    # Only publish a fully committed, closed database. A failed or interrupted
+    # creation must not occupy the final path with an unusable empty file.
+    with tempfile.TemporaryDirectory(prefix=".think3-init-", dir=path.parent) as directory:
+        staged = Path(directory) / "ledger.sqlite3"
+        staged.touch(exist_ok=False)
+        with connect(staged, write=True, validate=False) as db:
+            for statement in SCHEMA:
+                db.execute(statement)
+            db.execute(f"PRAGMA application_id = {APPLICATION_ID}")
+            db.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
+            validate_database(db)
+        try:
+            if os.name == "nt":
+                # Windows rename always refuses an existing destination.
+                os.rename(staged, path)
+            else:
+                # POSIX rename could overwrite it; a hard link publishes
+                # atomically without replacing another process's store.
+                os.link(staged, path)
+        except FileExistsError:
+            with connect(path, write=True):
+                return {"store": str(path), "schema_version": SCHEMA_VERSION, "created": False}
     return {"store": str(path), "schema_version": SCHEMA_VERSION, "created": True}
 
 
