@@ -1,4 +1,7 @@
 interface:
   display_name: "吾日三省吾身"
-  short_description: "在阶段、事件或周期复盘中核对目标、证据与成本，把经验转成可验证的改进"
-  default_prompt: "使用 $think3（吾日三省吾身）复盘当前阶段的工作，按需读取相关项目与聊天，区分事实、推断和未知，给出应保留、改变或停止的做法及验证方式。"
+  short_description: "按需复盘目标、证据与成本，用本地记录跟进少量可验证的改进"
+  default_prompt: "使用 $think3 复盘当前阶段，依据实际结果找出值得保留、改变或停止的做法，并给出必要的下一步；需要持续跟进时使用项目内的本地记录。"
+
+policy:
+  allow_implicit_invocation: false
