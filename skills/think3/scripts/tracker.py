@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import re
 import sqlite3
 import sys
 import tempfile
@@ -86,8 +87,42 @@ class JsonParser(argparse.ArgumentParser):
         emit({"help": self.format_help()}, stream=file)
 
 
+def skill_version() -> str:
+    """Read the version from the bundled entrypoint, without a YAML dependency."""
+    text = (Path(__file__).resolve().parents[1] / "SKILL.md").read_text(encoding="utf-8")
+    front = re.match(r"\A---\r?\n(.*?)\r?\n---(?:\r?\n|\Z)", text, re.S)
+    in_metadata = False
+    if front:
+        for line in front.group(1).splitlines():
+            if line.rstrip() == "metadata:":
+                in_metadata = True
+                continue
+            if in_metadata and line and not line[0].isspace():
+                break
+            if in_metadata and line.startswith("  version:"):
+                value = line.split(":", 1)[1].strip()
+                if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+                    value = value[1:-1]
+                if re.fullmatch(r"\d+\.\d+\.\d+", value):
+                    return value
+                break
+    raise TrackerError("invalid_skill_metadata", "SKILL.md must declare metadata.version as major.minor.patch.")
+
+
+def version_info() -> dict:
+    return {"name": "think3", "version": skill_version(), "schema_version": SCHEMA_VERSION}
+
+
+class VersionAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        emit(version_info())
+        parser.exit()
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = JsonParser(description=__doc__)
+    parser.add_argument("--version", action=VersionAction, nargs=0,
+                        help="Report the bundled skill and database schema versions without opening a store.")
     parser.add_argument("--store", help="Explicit path to a project SQLite database (required).")
     commands = parser.add_subparsers(dest="command", required=True, parser_class=JsonParser)
     for name in ("init", "add", "list", "show", "history", "transition", "export"):
@@ -314,6 +349,7 @@ def read_store(path: Path, args: argparse.Namespace) -> dict:
             return {"events": events(db, nonempty(args.id, "ID") if args.id is not None else None)}
         if args.command == "export":
             return {
+                "generator": {"name": "think3", "version": skill_version()},
                 "schema_version": SCHEMA_VERSION,
                 "items": [dict(row) for row in db.execute("SELECT * FROM items ORDER BY created_at, id")],
                 "events": events(db),

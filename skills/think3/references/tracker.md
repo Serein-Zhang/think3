@@ -64,6 +64,8 @@ python tracker.py --store PROJECT/.think3/ledger.sqlite3 transition ITEM_ID --to
 
 ## 导出与能力边界
 
-`history` 不带编号时返回全部事件；`export` 输出包含版本、条目与事件的 JSON，可按用户需要保存或交接。CLI 不提供删除历史的命令，但数据库可被其他软件修改，因此历史不是防篡改审计。
+`history` 不带编号时返回全部事件；`export` 输出包含版本、条目与事件的 JSON，可按用户需要保存或交接。自1.1.4起，`generator.version` 表示本次导出所用的 Skill 版本，`schema_version` 表示数据库结构版本；不把本次导出版本补推为每条历史记录创建时的版本。CLI 不提供删除历史的命令，但数据库可被其他软件修改，因此历史不是防篡改审计。
+
+查询安装版本可运行 `python tracker.py --version`，返回 JSON，无需 `--store`，不读取或创建数据库。完整版本说明见 [版本跟踪](version-history.md)。
 
 这个工具提供可靠记录和找回能力，不训练模型、不自动晋升全局经验、不修改其他 skill、不调度提醒。验证结果尚未出现时保留 implemented，本轮工作可以结束。
