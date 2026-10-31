@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import json
 import os
 from pathlib import Path
@@ -156,10 +157,14 @@ def nonempty(value: str | None, name: str) -> str:
 
 
 def store_path(value: str | None) -> Path:
-    path = Path(nonempty(value, "--store")).expanduser().resolve()
-    protected = [Path(__file__).resolve().parents[1], Path.home() / ".codex" / "memories"]
+    nonempty(value, "--store")
+    # A quoted filesystem path may legitimately start or end with whitespace.
+    path = Path(value).expanduser().resolve()
+    homes = [Path.home() / ".codex"]
     if os.environ.get("CODEX_HOME"):
-        protected.append(Path(os.environ["CODEX_HOME"]) / "memories")
+        homes.append(Path(os.environ["CODEX_HOME"]))
+    protected = [Path(__file__).resolve().parents[1]]
+    protected.extend(home / name for home in homes for name in ("memories", "memories_v2"))
     for root in protected:
         root = root.expanduser().resolve()
         if path == root or root in path.parents:
@@ -285,6 +290,15 @@ def initialize(path: Path) -> dict:
         except FileExistsError:
             with connect(path, write=True) as db:
                 return {"store": str(path), "schema_version": database_schema_version(db), "created": False}
+        except OSError as exc:
+            if os.name != "nt" and exc.errno in {errno.ENOTSUP, errno.EOPNOTSUPP, errno.ENOSYS, errno.EPERM}:
+                raise TrackerError(
+                    "unsupported_filesystem",
+                    "This location cannot atomically publish a new ledger without replacing an existing file. "
+                    "Choose a local filesystem that supports hard links, or keep the project's existing text records. "
+                    "This operation did not publish a ledger.",
+                ) from exc
+            raise
     return {"store": str(path), "schema_version": SCHEMA_VERSION, "created": True}
 
 
@@ -294,6 +308,22 @@ def migrate_store(path: Path) -> dict:
         previous_version = database_schema_version(db)
         if previous_version == SCHEMA_VERSION:
             return {"store": str(path), "schema_version": previous_version, "migrated": False}
+
+        # Dropping a referenced table can cascade-delete or null out rows in
+        # an external table even when its replacement uses the same event IDs.
+        # Reject such extensions before touching the schema, including empty
+        # referencing tables; a transaction alone does not prevent this loss.
+        tables = [row["name"] for row in db.execute("SELECT name FROM sqlite_master WHERE type = 'table'")]
+        for table in tables:
+            identifier = table.replace('"', '""')
+            for foreign_key in db.execute(f'PRAGMA foreign_key_list("{identifier}")'):
+                if foreign_key["table"].casefold() == "events":
+                    raise TrackerError(
+                        "unsupported_migration",
+                        "An additional foreign key references events. This migration does not support that "
+                        "database extension; the schema and records were not changed. "
+                        "Keep the backup and use a migration that preserves the external dependency.",
+                    )
 
         # The supported legacy schema has the same columns, but its CHECK
         # constraint admits only created/transitioned events. Rebuild the table
