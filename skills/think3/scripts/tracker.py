@@ -17,7 +17,8 @@ from uuid import uuid4
 
 
 APPLICATION_ID = 0x54484B33  # THK3
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
+SUPPORTED_SCHEMA_VERSIONS = (1, SCHEMA_VERSION)
 STATUSES = ("proposed", "implemented", "verified", "withdrawn")
 ALLOWED_TRANSITIONS = {
     "proposed": {"implemented", "withdrawn"},
@@ -55,7 +56,7 @@ SCHEMA = (
     """CREATE TABLE events (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         item_id TEXT NOT NULL REFERENCES items(id),
-        kind TEXT NOT NULL CHECK (kind IN ('created','transitioned')),
+        kind TEXT NOT NULL CHECK (kind IN ('created','transitioned','observed')),
         from_status TEXT,
         to_status TEXT NOT NULL,
         revision INTEGER NOT NULL,
@@ -125,7 +126,7 @@ def build_parser() -> argparse.ArgumentParser:
                         help="Report the bundled skill and database schema versions without opening a store.")
     parser.add_argument("--store", help="Explicit path to a project SQLite database (required).")
     commands = parser.add_subparsers(dest="command", required=True, parser_class=JsonParser)
-    for name in ("init", "add", "list", "show", "history", "transition", "export"):
+    for name in ("init", "migrate", "add", "list", "show", "history", "transition", "observe", "export"):
         command = commands.add_parser(name)
         # Accept --store before or after the command without replacing a global value.
         command.add_argument("--store", default=argparse.SUPPRESS)
@@ -137,13 +138,14 @@ def build_parser() -> argparse.ArgumentParser:
             command.add_argument("--status", choices=STATUSES)
             command.add_argument("--scope")
             command.add_argument("--trigger")
-        elif name in ("show", "history", "transition"):
+        elif name in ("show", "history", "transition", "observe"):
             command.add_argument("id", nargs="?" if name == "history" else None)
-            if name == "transition":
-                command.add_argument("--to", dest="status", required=True, choices=STATUSES)
+            if name in ("transition", "observe"):
+                if name == "transition":
+                    command.add_argument("--to", dest="status", required=True, choices=STATUSES)
                 command.add_argument("--expected-revision", type=int, required=True)
                 command.add_argument("--note", required=True)
-                command.add_argument("--evidence")
+                command.add_argument("--evidence", required=name == "observe")
     return parser
 
 
@@ -169,13 +171,17 @@ def now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")
 
 
+def database_schema_version(db: sqlite3.Connection) -> int:
+    return db.execute("PRAGMA user_version").fetchone()[0]
+
+
 def validate_database(db: sqlite3.Connection) -> None:
     marker = db.execute("PRAGMA application_id").fetchone()[0]
-    version = db.execute("PRAGMA user_version").fetchone()[0]
+    version = database_schema_version(db)
     if marker != APPLICATION_ID:
         raise TrackerError("invalid_store", "The file is not a think3 tracker database; it was not modified.")
-    if version != SCHEMA_VERSION:
-        raise TrackerError("unsupported_schema", f"Unsupported schema version {version}; expected {SCHEMA_VERSION}.")
+    if version not in SUPPORTED_SCHEMA_VERSIONS:
+        raise TrackerError("unsupported_schema", f"Unsupported schema version {version}; supported versions are 1 and {SCHEMA_VERSION}.")
     for table, expected in (("items", ITEM_COLUMNS), ("events", EVENT_COLUMNS)):
         actual = tuple(row["name"] for row in db.execute(f"PRAGMA table_info({table})"))
         if actual != expected:
@@ -254,8 +260,8 @@ def events(db: sqlite3.Connection, item_id: str | None = None) -> list[dict]:
 
 def initialize(path: Path) -> dict:
     if path.exists():
-        with connect(path, write=True):
-            return {"store": str(path), "schema_version": SCHEMA_VERSION, "created": False}
+        with connect(path, write=True) as db:
+            return {"store": str(path), "schema_version": database_schema_version(db), "created": False}
     path.parent.mkdir(parents=True, exist_ok=True)
     # Only publish a fully committed, closed database. A failed or interrupted
     # creation must not occupy the final path with an unusable empty file.
@@ -277,9 +283,49 @@ def initialize(path: Path) -> dict:
                 # atomically without replacing another process's store.
                 os.link(staged, path)
         except FileExistsError:
-            with connect(path, write=True):
-                return {"store": str(path), "schema_version": SCHEMA_VERSION, "created": False}
+            with connect(path, write=True) as db:
+                return {"store": str(path), "schema_version": database_schema_version(db), "created": False}
     return {"store": str(path), "schema_version": SCHEMA_VERSION, "created": True}
+
+
+def migrate_store(path: Path) -> dict:
+    """Upgrade an existing ledger only on this explicit, transactional request."""
+    with connect(path, write=True) as db:
+        previous_version = database_schema_version(db)
+        if previous_version == SCHEMA_VERSION:
+            return {"store": str(path), "schema_version": previous_version, "migrated": False}
+
+        # The supported legacy schema has the same columns, but its CHECK
+        # constraint admits only created/transitioned events. Rebuild the table
+        # without changing old rows, event IDs, or the AUTOINCREMENT high-water mark.
+        sequence = db.execute("SELECT seq FROM sqlite_sequence WHERE name = 'events'").fetchone()
+        event_objects = [row["sql"] for row in db.execute(
+            "SELECT sql FROM sqlite_master WHERE tbl_name = 'events' "
+            "AND type IN ('index', 'trigger') AND sql IS NOT NULL ORDER BY type, name"
+        )]
+        db.execute(SCHEMA[1].replace("CREATE TABLE events (", "CREATE TABLE events_v2 (", 1))
+        columns = ", ".join(EVENT_COLUMNS)
+        db.execute(f"INSERT INTO events_v2 ({columns}) SELECT {columns} FROM events ORDER BY id")
+        db.execute("DROP TABLE events")
+        db.execute("ALTER TABLE events_v2 RENAME TO events")
+        for statement in event_objects:
+            db.execute(statement)
+        db.execute("CREATE INDEX IF NOT EXISTS events_by_item ON events(item_id, id)")
+        if sequence is not None:
+            updated = db.execute(
+                "UPDATE sqlite_sequence SET seq = MAX(seq, ?) WHERE name = 'events'", (sequence[0],)
+            )
+            if updated.rowcount == 0:
+                db.execute("INSERT INTO sqlite_sequence (name, seq) VALUES ('events', ?)", (sequence[0],))
+
+        # Keep this last so any error rolls back the whole schema change as well
+        # as the copied rows. Do not use executescript, which commits implicitly.
+        db.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
+        validate_database(db)
+        return {
+            "store": str(path), "schema_version": SCHEMA_VERSION,
+            "from_schema_version": previous_version, "migrated": True,
+        }
 
 
 def add_item(path: Path, args: argparse.Namespace) -> dict:
@@ -341,6 +387,39 @@ def transition_item(path: Path, args: argparse.Namespace) -> dict:
         return {"item": get_item(db, item_id), "changed": True}
 
 
+def observe_item(path: Path, args: argparse.Namespace) -> dict:
+    """Append evidence without implying that an item's decision has changed."""
+    item_id = nonempty(args.id, "ID")
+    note = nonempty(args.note, "--note")
+    evidence = nonempty(args.evidence, "--evidence")
+    if args.expected_revision < 1:
+        raise TrackerError("invalid_arguments", "--expected-revision must be a positive integer.", 2)
+    with connect(path, write=True) as db:
+        if database_schema_version(db) < SCHEMA_VERSION:
+            raise TrackerError(
+                "migration_required",
+                "Appending observations requires schema version 2. "
+                "Back up the existing ledger, then run migrate with the same --store path. "
+                "Other commands continue to support this schema version 1 ledger.",
+            )
+        previous = get_item(db, item_id)
+        if previous["revision"] != args.expected_revision:
+            raise TrackerError("revision_conflict", f"Expected revision {args.expected_revision}, but current revision is {previous['revision']}. Reload before making a new decision.")
+        timestamp = now()
+        revision = previous["revision"] + 1
+        updated = db.execute(
+            "UPDATE items SET revision = ?, updated_at = ? WHERE id = ? AND revision = ?",
+            (revision, timestamp, item_id, args.expected_revision),
+        )
+        if updated.rowcount != 1:
+            raise TrackerError("revision_conflict", "The item changed concurrently; reload before making a new decision.")
+        db.execute(
+            "INSERT INTO events (item_id, kind, from_status, to_status, revision, note, evidence, created_at) VALUES (?, 'observed', ?, ?, ?, ?, ?, ?)",
+            (item_id, previous["status"], previous["status"], revision, note, evidence, timestamp),
+        )
+        return {"item": get_item(db, item_id), "changed": True}
+
+
 def read_store(path: Path, args: argparse.Namespace) -> dict:
     with connect(path) as db:
         if args.command == "show":
@@ -350,7 +429,7 @@ def read_store(path: Path, args: argparse.Namespace) -> dict:
         if args.command == "export":
             return {
                 "generator": {"name": "think3", "version": skill_version()},
-                "schema_version": SCHEMA_VERSION,
+                "schema_version": database_schema_version(db),
                 "items": [dict(row) for row in db.execute("SELECT * FROM items ORDER BY created_at, id")],
                 "events": events(db),
             }
@@ -374,10 +453,14 @@ def main(argv: list[str] | None = None) -> int:
         path = store_path(args.store)
         if args.command == "init":
             result = initialize(path)
+        elif args.command == "migrate":
+            result = migrate_store(path)
         elif args.command == "add":
             result = add_item(path, args)
         elif args.command == "transition":
             result = transition_item(path, args)
+        elif args.command == "observe":
+            result = observe_item(path, args)
         else:
             result = read_store(path, args)
         emit(result)
