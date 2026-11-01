@@ -1,8 +1,12 @@
 # 吾日三省吾身 / think3
 
+<img src="skills/think3/assets/think3.svg" width="96" height="96" alt="think3：三省与回望" />
+
+图标文件：[可编辑 SVG](skills/think3/assets/think3.svg) · [1024 像素 PNG](skills/think3/assets/think3.png)。
+
 让代理在需要时回看自己的目标、判断与做法，把发现落实到下一次行动。
 
-当前版本 **1.3.1**。三省是三个判断角度，不是每天运行三次，也不需要后台任务。
+当前版本 **1.3.2**。三省是三个判断角度，不是每天运行三次，也不需要后台任务。
 
 ## 怎样使用
 
@@ -19,7 +23,7 @@ $think3 简短核对：当前证据足以支持刚才的交付结论吗？
 
 ## 安装与查询版本
 
-从本仓库的 [Releases](https://github.com/Serein-Zhang/think3/releases) 下载运行 ZIP，将解压得到的 `think3` 整个目录复制到宿主的技能目录。也可以从源码复制 `skills/think3/`。保留 `agents`、`references`、`scripts` 与入口文件的相对位置。
+从本仓库的 [Releases](https://github.com/Serein-Zhang/think3/releases) 下载运行 ZIP，将解压得到的 `think3` 整个目录复制到宿主的技能目录。也可以从源码复制 `skills/think3/`。保留 `assets`、`agents`、`references`、`scripts` 与入口文件的相对位置。
 
 使用支持本目录结构的 Codex 环境时，目标通常是 `CODEX_HOME/skills/think3/`；未自定义目录的本机安装位于用户目录的 `.codex/skills/think3/`。已有安装先备份，再替换运行文件。自动选用以宿主实际发现的技能为准，文件复制成功不代表触发效果已验证。
 
@@ -52,7 +56,7 @@ python -m pip install -r requirements-dev.txt
 python -B -m unittest discover -s tests -v
 python -B tools/build_release.py --check
 python -B tools/build_release.py
-python -B tools/check_archive.py releases/吾日三省吾身_think3_1.3.1.zip
+python -B tools/check_archive.py releases/吾日三省吾身_think3_1.3.2.zip
 ```
 
 构建采用运行文件白名单，并生成哈希清单；真实账本、安装备份、缓存和私人聊天不进入发布包。测试使用隔离的临时数据。结构与 CLI 测试、模型行为模拟、宿主实际触发及真实任务收益分别判断。

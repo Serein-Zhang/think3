@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">吾日三省吾身 / think3</title>
+  <desc id="desc">深松绿圆角方形内，三道金色横线被一枚暖白色回望箭头环抱，象征三省与重新审视。</desc>
+  <rect width="512" height="512" rx="112" fill="#143A35"/>
+  <path d="M358.2 125.2A166 166 0 1 0 419.5 227.2" stroke="#F7F1E4" stroke-width="24" stroke-linecap="round"/>
+  <path d="M414 199L394 243L439 235Z" fill="#F7F1E4"/>
+  <path d="M197 207H315M197 256H286M197 305H315" stroke="#E6BD77" stroke-width="24" stroke-linecap="round"/>
+</svg>

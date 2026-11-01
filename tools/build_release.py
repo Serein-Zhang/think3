@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import struct
 import zipfile
 
 import yaml
@@ -20,6 +21,7 @@ EXPECTED_FILES = {
     "SKILL.md", "agents/openai.yaml", "references/cross-project-review.md",
     "references/tracker.md", "references/version-history.md",
     "references/expression.md", "scripts/tracker.py",
+    "assets/think3.svg", "assets/think3.png",
 }
 ORIGINAL_SHA256 = "e21078de9c246b36fc4767aba10a43dc79963090ee85eb71a838920bdef4530a"
 
@@ -40,7 +42,14 @@ def validate():
             "Runtime inventory differs from the release allowlist; check for missing files or accidental data.")
     for path in files:
         require(not path.is_symlink(), f"Release cannot contain symlink: {path}")
-        path.read_text(encoding="utf-8")
+        if path.suffix == ".png":
+            payload = path.read_bytes()
+            require(payload[:8] == b"\x89PNG\r\n\x1a\n" and len(payload) >= 24,
+                    f"Invalid PNG icon: {path}")
+            require(struct.unpack(">II", payload[16:24]) == (1024, 1024),
+                    "Large icon must be 1024 by 1024 pixels")
+        else:
+            path.read_text(encoding="utf-8")
     body = (SKILL / "SKILL.md").read_text(encoding="utf-8")
     match = re.match(r"\A---\n(.*?)\n---\n", body, re.S)
     require(match is not None, "Missing SKILL.md YAML frontmatter")
@@ -57,6 +66,10 @@ def validate():
     require(interface.get("display_name") == "吾日三省吾身", "Display name changed")
     require(25 <= len(interface.get("short_description", "")) <= 64, "UI short description must be 25-64 characters")
     require("$think3" in interface.get("default_prompt", ""), "Default prompt must name $think3")
+    for field in ("icon_small", "icon_large"):
+        target = (SKILL / interface.get(field, "")).resolve()
+        require(target.is_relative_to(SKILL.resolve()) and target.is_file(),
+                f"Missing or escaping {field} asset")
     links = []
     for path in files:
         if path.suffix == ".md":
