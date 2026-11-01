@@ -1,6 +1,6 @@
 interface:
   display_name: "吾日三省吾身"
-  short_description: "按需复盘目标、证据与成本，沿用项目记录跟进少量可验证的改进"
+  short_description: "在关键决策前轻量核对，遇到偏差定向纠正，按需展开完整复盘与改进"
   default_prompt: "使用 $think3 复盘当前阶段，依据实际结果找出值得保留、改变或停止的做法，并给出必要的下一步；需要持续跟进时优先沿用项目已有记录。"
 
 policy:
