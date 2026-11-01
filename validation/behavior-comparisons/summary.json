@@ -63,16 +63,17 @@
     "reuse/assessment.json": "8abcbc09fec319b41c52fc7f3ef74d7500cc134438c8fabf3a257673cb1e2cc2"
   },
   "exported_file_sha256": {
-    "reuse-1.3.0.json": "a22073697d9004c41f834b2729067b68c6601398e0e0bbbbb241013625e881f1",
-    "reuse-1.3.1.json": "75748a8b79a6ce00b6aedcda99bd6f8541d3ab88158e040e66787d57cca2b7b2",
-    "reuse-review.json": "bf05c871bb580212ed08496fec6d9116bd210366dfc88a130da165fc6b5b33e2",
-    "routing-1.2.2.json": "fe48478864f30b26219e5313f3b7fc33987436812e9322124d0b654276ea698b",
-    "routing-1.3.0.json": "b0be1cf1c9a15d7898f0bd5dfefb40061b7cf0a307dc7c0d94707f9782d57519"
+    "reuse-1.3.0.json": "d5130d30448bad4e8b89141f8e1026274d3b7e912bae9023d0e3bf626176b281",
+    "reuse-1.3.1.json": "d81163f977526147cd531dcdd362280bff6d402ce2e047c1589753955319a8c5",
+    "reuse-review.json": "21bd41f4948db34d0e5fdb402769344a10c906c865b1b619bfcc0948351eae33",
+    "routing-1.2.2.json": "f7c53cd8bf028db5f98ab7b675200c93ac0e2c9314466cde28df199c4f12f1fd",
+    "routing-1.3.0.json": "e03e3412fc26bcbbf975437d1ad4d91811ed55d6e12636f8f0e737c25cf0f19a"
   },
   "input_sha256": {
     "tests/routing-cases.json": "fd974af1635cfbd4c01304765364f3547f109397de2081a609c8d5d548ed6795",
     "tests/routing-criteria.json": "b8ce6fb0a226364f3690606ae01e531c9d2a39ae2dfbf0cc825364c6ce79acb0",
     "tests/reuse-cases.json": "a21a471edc8ed90dbd43d81700163758efa8b2ffbd9b278d849484fbbd1a440f",
     "tests/reuse-criteria.json": "50331f43f5558e653fb3b266220e6cf8deb4f02b788c21619e4e7c76f1f5bdb7"
-  }
+  },
+  "exported_hash_basis": "UTF-8 with LF line endings, matching the Git repository blobs."
 }
