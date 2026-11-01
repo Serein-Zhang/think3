@@ -1,0 +1,8 @@
+Asset: think3-hero.png
+Generated with the built-in image_gen tool. Kept as a documentation asset; not part of the runtime package.
+
+Use case: ads-marketing / editorial illustration.
+Asset type: wide GitHub README hero banner for the existing Chinese AI agent skill think3 (吾日三省吾身).
+Create a beautifully art-directed premium editorial banner, wide 1536x640 composition, flat print illustration with subtle paper grain and refined Chinese book-jacket sensibility, restrained wit. Existing brand palette: deep pine green #143A35 background, warm ivory #F7F1E4, muted gold #E6BD77, a tiny terracotta accent. No gradients or generic sci-fi neon.
+Left 58%: strong crisp readable Chinese editorial typography in warm ivory, generous margins. Top small exact text 'think3 · AGENT SKILL'. Large two-line exact headline: first line '下次注意。' second line '下次又到了。' The second line has one understated golden hand-drawn underline. No other writing anywhere.
+Right 42%: a charming small ivory desktop robot, more thoughtful than cute, carries a long blank paper reminder scroll. It is pausing and leaning down to examine its own gold footprints that loop back toward the very same small square hole in the floor. One hand is raised to its chin in reflection, the other holds the scroll. Its body language conveys the comic recognition 'wait, I have made this mistake before'. The hole is simple graphic geometry, not a frightening chasm. Footprints form one clear curved repeated path. Tiny three-stroke gold motif subtly echoes introspection. Sophisticated balanced composition, quiet negative space, no clutter, no 3D render, no app screenshot, no charts, no claims of measured results, no extra text, no watermarks. Keep all important content well inside the frame.

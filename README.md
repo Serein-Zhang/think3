@@ -1,16 +1,61 @@
 # 吾日三省吾身 · think3 Skill
 
-<img src="skills/think3/assets/think3.svg" align="right" width="96" height="96" alt="think3：三省与回望" />
+<p align="center">
+  <img src="docs/assets/think3-hero.png" width="100%" alt="下次注意。下次又到了。——一个智能体停下脚步，审视通往同一个坑的旧脚印。think3 · Agent Skill" />
+</p>
 
-**“下次注意。”——下次又到了。**
+<p align="center"><strong>事情交给 AI 了，怎么还得你一直当监工？</strong></p>
+
+think3 是给 **各大智能体用的复盘与纠偏 Skill**。它把一套按需自查的规则交给智能体：**回看你的交代，核对手中的证据，把该改的落实到接下来的做法。** 目标是让反复提醒、追问和收拾返工这几件事，少一点落在你身上。
 
 要求已经纠正过，AI 又按旧理解做了。它说“大功告成”，你一打开，问题还在。上次的复盘写得很认真，这次的错误也很眼熟。
 
-**事情交给 AI 了，怎么还得你一直当监工？**
+<p align="center">
+  <a href="https://github.com/Serein-Zhang/think3/releases/latest"><strong>下载 ZIP</strong></a>
+  &nbsp; · &nbsp;
+  <a href="#安装"><strong>复制安装提示词</strong></a>
+  &nbsp; · &nbsp;
+  <a href="docs/evaluation.md">数据与复现</a>
+  &nbsp; · &nbsp;
+  <a href="skills/think3/SKILL.md">查看技能规则</a>
+</p>
 
-think3 是给 **Codex 等 AI 代理用的复盘与纠偏 Skill**。它把一套按需自查的规则交给代理：**回看你的交代，核对手中的证据，把该改的落实到接下来的做法。** 目标是让反复提醒、追问和收拾返工这几件事，少一点落在你身上。
+## 安装
 
-[下载运行包](https://github.com/Serein-Zhang/think3/releases/latest) · [安装](#安装) · [数据与复现](docs/evaluation.md) · [查看技能规则](skills/think3/SKILL.md) · 当前版本 **1.3.2**
+**两种方式，选你顺手的。安装这件事，也交给智能体。** 当前版本 **1.3.2**。
+
+### ① 下载 ZIP，直接扔给 Codex
+
+从 [最新 Release](https://github.com/Serein-Zhang/think3/releases/latest) 下载 `think3-<版本号>-runtime.zip`，**不用自己解压，原封不动交给 Codex**，再说一句：
+
+```text
+帮我安装这个 think3 Skill。
+已有版本先备份再更新，保留现有数据。
+装好后核对版本，告诉我怎么调用。
+```
+
+### ② 复制这段话，让它从仓库安装
+
+把下面整段发给你的智能体：
+
+```text
+请安装 think3（吾日三省吾身）Skill：
+https://github.com/Serein-Zhang/think3
+
+请先阅读仓库说明，按当前宿主的安装约定，
+安装 skills/think3/ 整个目录。
+保留内部文件结构；已有版本先备份再更新，
+保留现有数据。
+装好后核对版本，告诉我当前宿主里怎么调用。
+```
+
+适用于支持本地 Skill 的智能体；安装位置、自动发现和调用方式以当前宿主为准。**复盘本身无需 Python，也无需创建数据库。**
+
+安装后，在支持 `$think3` 调用的宿主里试一句：
+
+```text
+$think3 简短核对：当前证据足以支持刚才的交付结论吗？
+```
 
 ## 把「下次注意」落到下一步
 
@@ -39,24 +84,6 @@ $think3 同一个问题又出现了。看看上次的改进为什么没生效，
 **一次复盘有没有用，要看它后来怎么做。** 在这个例子里，验收要看脚本和运行结果，写下“下次注意”只算开了个头。
 
 *这是用法示意，改编自仓库的 [R06 合成情境](tests/reuse-cases.json)，不是已经执行的真实案例。只要求复盘时给判断与建议；已有修复授权时继续完成范围内的改进。*
-
-## 安装
-
-1. 从 [最新 Release](https://github.com/Serein-Zhang/think3/releases/latest) 下载 `think3-<版本号>-runtime.zip` 运行包，解压得到 `think3` 文件夹。
-2. 将整个文件夹放进宿主的技能目录。Codex 未自定义目录时，放到用户目录下的 `.codex/skills/think3/`；自定义时使用 `CODEX_HOME/skills/think3/`。已有安装先备份，再替换运行文件。
-3. 在宿主发现该 Skill 后，在任务对话中输入：
-
-```text
-$think3 复盘当前任务，找出最值得保留、改变或停止的做法，并给出下一步。
-```
-
-也可以直接从源码复制 [skills/think3/](skills/think3/) 整个目录，保留内部文件的相对位置。**复盘本身无需 Python，也无需创建数据库。**
-
-需要短一点时：
-
-```text
-$think3 简短核对：当前证据足以支持刚才的交付结论吗？
-```
 
 ## 三省，从哪里来
 
