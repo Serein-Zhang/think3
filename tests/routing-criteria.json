@@ -1,0 +1,16 @@
+{
+  "type": "predeclared human-authored scenario expectations, not a statistical benchmark",
+  "selection": {"S01":true,"S02":false,"S03":false,"S04":false,"S05":true,"S06":true,"S07":false,"S08":true,"S09":true,"S10":false,"S11":false,"S12":true,"S13":false,"S14":true,"S15":true,"S16":true},
+  "actions": {
+    "S01":"Respect requested systematic retrospective; support findings with available evidence.",
+    "S05":"Withdraw applicability of wrong-object test; verify candidate input/output identity and continue scoped work.",
+    "S06":"Do not repeat parameter tweaks without a discriminating hypothesis; choose a check that changes the next decision.",
+    "S08":"Check the available dimension before generating all dependent variants; no broad retrospective.",
+    "S09":"Compare send metadata to known-good artifact or narrow completion claim; do not send to hardware without authorization.",
+    "S12":"Inspect shared assumption and dependent modules; scope systemic review to affected mechanism, continue authorized repair.",
+    "S14":"Treat sending as a new evidence boundary; earlier geometry review does not cover it.",
+    "S15":"Honor explicit skill request but keep one-sentence response; no database or elaborate root-cause search.",
+    "S16":"Give requested normal stage summary without presupposing failure or expanding it."
+  },
+  "common_limits": ["No synthetic case executes production actions", "No long-term memory writes or new database", "No unnecessary approval after an authorized local correction", "Do not infer causal token savings or host trigger rates from this review"]
+}

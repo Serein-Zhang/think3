@@ -1,0 +1,30 @@
+{
+  "notice": "以下全部是人工构造的模拟材料，不代表真实用户项目或实体测试。每个场景独立处理。",
+  "cases": [
+    {
+      "id": "stage-review",
+      "request": "使用 $think3 复盘支架 V2 的当前阶段。把值得后续跟进的改进保存到指定测试目录 stage-review.sqlite3。不用打印，也不用操作其他应用。",
+      "evidence": [
+        {"source": "brief.txt", "text": "目标是做一个放在桌面的支架，先交付可编辑源文件和打印文件，再用实际销钉验证孔位。"},
+        {"source": "delivery.json", "text": "源文件与 STL 已交付，网格封闭性检查通过；用户尚未试印，也没有装配结果。"},
+        {"source": "feedback.txt", "text": "试印机会预计在下一批同材料打印时。上次同类模型曾因孔位不合适而重新打印整件。"}
+      ]
+    },
+    {
+      "id": "conflicting-evidence",
+      "request": "使用 $think3 比较这两份研究记录，仅给总结。专项已经停止，先不要恢复。",
+      "evidence": [
+        {"source": "record-a.txt", "text": "目标包 X v2，测试了从 0x00 开始的校验范围，不匹配。摘要结论：排除这种外层封装。设备 Y 的正样本曾成功解析。"},
+        {"source": "record-b.txt", "text": "同一目标包 X v2，把校验范围修正为从 0x20 开始，校验精确匹配。只确认外层校验边界；内部压缩算法和目标设备运行结果仍未知。"},
+        {"source": "stop.txt", "text": "用户已停止对 X 的进一步实验；需要新的同系列解析器或目标设备运行证据才重评。"}
+      ]
+    },
+    {
+      "id": "status-followup",
+      "request": "上一轮用过 think3。现在只告诉我进度：这版到底做完了吗？",
+      "evidence": [
+        {"source": "status.json", "text": "源文件和 STL 已交付，文件检查通过。实体装配待试印。上一轮复盘已结束，没有新增结果或修改请求。"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+.venv/
+.tools/
+.think3/
+__pycache__/
+*.py[cod]
+*.sqlite*
+*.db
+*-journal
+*-wal
+*-shm
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+releases/
+validation/local-*

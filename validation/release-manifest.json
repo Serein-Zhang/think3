@@ -1,0 +1,99 @@
+{
+  "version": "1.3.1",
+  "checks": "passed",
+  "runtime_files": 7,
+  "allow_implicit_invocation": true,
+  "runtime_imports": [
+    "__future__",
+    "argparse",
+    "contextlib",
+    "datetime",
+    "errno",
+    "json",
+    "os",
+    "pathlib",
+    "re",
+    "sqlite3",
+    "sys",
+    "tempfile",
+    "uuid"
+  ],
+  "links": [
+    {
+      "source": "SKILL.md",
+      "target": "references/version-history.md"
+    },
+    {
+      "source": "SKILL.md",
+      "target": "references/expression.md"
+    },
+    {
+      "source": "SKILL.md",
+      "target": "references/cross-project-review.md"
+    },
+    {
+      "source": "SKILL.md",
+      "target": "references/tracker.md"
+    },
+    {
+      "source": "references/expression.md",
+      "target": "../SKILL.md"
+    },
+    {
+      "source": "references/tracker.md",
+      "target": "version-history.md"
+    },
+    {
+      "source": "references/version-history.md",
+      "target": "tracker.md#旧账本升级"
+    }
+  ],
+  "upstream_sha256": "e21078de9c246b36fc4767aba10a43dc79963090ee85eb71a838920bdef4530a",
+  "entrypoint_bytes": 8803,
+  "original_entrypoint_bytes": 6654,
+  "files": [
+    {
+      "path": "SKILL.md",
+      "bytes": 8803,
+      "sha256": "9ab2ad30488ddc8b2c75806730973f2c6be643e25812b98eddc3f2ac803bbdf2"
+    },
+    {
+      "path": "agents/openai.yaml",
+      "bytes": 415,
+      "sha256": "225176b9b28594e014836e34316bc7a07bd20b608a7814544f706e5aba82a800"
+    },
+    {
+      "path": "references/cross-project-review.md",
+      "bytes": 1696,
+      "sha256": "dd709b64a5f056c092fe9f095bd94dad1e470e415e7f9059346d06e0a56a458b"
+    },
+    {
+      "path": "references/expression.md",
+      "bytes": 3733,
+      "sha256": "9c38f3aa0b71e6634042c2066fcbde1858ae5c82763356c09f6afe42c4ca4a34"
+    },
+    {
+      "path": "references/tracker.md",
+      "bytes": 9879,
+      "sha256": "54ee672ce9e60fad201e752fd32ec5fe14e07f4e1fe51ed7c3719a780c8449b7"
+    },
+    {
+      "path": "references/version-history.md",
+      "bytes": 6415,
+      "sha256": "b5333601bf32ee471edd4b4f12b5329bf48bc2aa353a9e21644a7dc0a4a95fd9"
+    },
+    {
+      "path": "scripts/tracker.py",
+      "bytes": 24340,
+      "sha256": "7a360f309fd25c5fb6db6d259ab23e1806e0de965f863fcb651a9b41d603bab0"
+    }
+  ],
+  "archive": {
+    "path": "releases/吾日三省吾身_think3_1.3.1.zip",
+    "bytes": 23828,
+    "sha256": "739959daec905bd2d3ac5252fcff25b44e7b65e11a4c2e4522b905001102c84c",
+    "crc": "passed",
+    "roundtrip": "passed",
+    "reproducible": true
+  }
+}
