@@ -1,0 +1,54 @@
+{
+  "kind": "original_semantic_review_not_reexecuted",
+  "cases": [
+    {
+      "id": "R01",
+      "baseline": "pass",
+      "candidate": "pass",
+      "review_note": "Both limit historical proof to the original environment. Candidate makes device import conditional on output differences; baseline proposes it directly. Neither proves real savings."
+    },
+    {
+      "id": "R02",
+      "baseline": "pass",
+      "candidate": "pass",
+      "review_note": "Both reuse condition-matched evidence and proceed without age-based revalidation."
+    },
+    {
+      "id": "R03",
+      "baseline": "pass",
+      "candidate": "pass",
+      "review_note": "Both follow replacement SYNC-02 and query the request before retrying."
+    },
+    {
+      "id": "R04",
+      "baseline": "pass",
+      "candidate": "pass",
+      "review_note": "Both preserve unknown historical validity and query current request before any rewrite."
+    },
+    {
+      "id": "R05",
+      "baseline": "pass",
+      "candidate": "pass",
+      "review_note": "Both complete the two-sentence summary without unrelated history or a new ledger."
+    },
+    {
+      "id": "R06",
+      "baseline": "pass",
+      "candidate": "pass",
+      "review_note": "Both put input checks in the existing build entry and propose positive/negative validation."
+    },
+    {
+      "id": "R07",
+      "baseline": "pass",
+      "candidate": "pass",
+      "review_note": "Both repair the bypassed entry and README while preserving the valid build.py evidence."
+    },
+    {
+      "id": "R08",
+      "baseline": "pass",
+      "candidate": "pass",
+      "review_note": "Both distinguish simulated reasonable actions and installation checks from unmeasured time savings."
+    }
+  ],
+  "decision": "Publish the small clarification update. No demonstrated accuracy or time improvement over 1.3.0; both versions passed the simulated reuse cases."
+}

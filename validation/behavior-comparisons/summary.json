@@ -1,0 +1,78 @@
+{
+  "original_evaluation_date": "2026-11-01",
+  "exported_at_utc": "2026-11-01T11:19:27.011855+00:00",
+  "new_model_runs_in_this_export": 0,
+  "original_protocol": {
+    "routing": "One independent evaluator per version; selection from description first, then proposed actions after reading the body. Original record says criteria were withheld.",
+    "reuse": "Independent agents with minimal task inputs; root semantic review against predeclared criteria. Single simulation per version; no real scenario actions executed.",
+    "execution": "Synthetic text decisions only; scenario actions were not executed.",
+    "model_id": null,
+    "reasoning_setting": null,
+    "repeated_trials": false,
+    "usage_and_latency": null
+  },
+  "runtime_entry_sha256_at_git_tags": {
+    "1.2.2": "52323ae3e494a025a39c67d4da135cd9a4d3e84b913e432d218f556574961486",
+    "1.3.0": "4e88096d382f119cf643a90502663e47bfb5bc6404e10c20cb89ec20339f5088",
+    "1.3.1": "9ab2ad30488ddc8b2c75806730973f2c6be643e25812b98eddc3f2ac803bbdf2"
+  },
+  "routing": {
+    "1.2.2": {
+      "selection_matches": 14,
+      "total": 16,
+      "false_selections": 0,
+      "negative_cases": 7
+    },
+    "1.3.0": {
+      "selection_matches": 16,
+      "total": 16,
+      "false_selections": 0,
+      "negative_cases": 7
+    },
+    "changed_selection_ids": [
+      "S08",
+      "S09"
+    ],
+    "counterevidence": "The baseline also proposed the dimension and sending-metadata checks without selecting think3; changed selection does not prove better task outcomes."
+  },
+  "reuse": {
+    "1.3.0": {
+      "original_review_pass": 8,
+      "total": 8
+    },
+    "1.3.1": {
+      "original_review_pass": 8,
+      "total": 8
+    },
+    "interpretation": "Both versions passed the original semantic review. No demonstrated accuracy or time improvement."
+  },
+  "missing_comparisons": [
+    "No-skill baseline",
+    "Short reflection prompt baseline",
+    "End-to-end task completion",
+    "Measured time, tokens, rework and user corrections",
+    "Live host automatic invocation"
+  ],
+  "sanitization": "Exported case outputs and original reuse review fields without edits. Omitted top-level local file paths, installation records and private-history material. Reused JSON-equivalent public synthetic inputs and rubrics. Original files retained locally.",
+  "original_source_sha256": {
+    "trigger/baseline-eval.json": "0dd88508c3619e48ffd7a9dd59b6e609ab05f0c93f7fdd875f2baff64d2ab007",
+    "trigger/candidate-eval.json": "4e3db2c434fd2763dbc603c4a4348e5059a2148d2d029b2bfd8b356a687d60ba",
+    "trigger/assessment.json": "ed98dcadf1b148bb0739bd5756a892ecc8f03273f64ce9f21a3b4240343455de",
+    "reuse/baseline-reuse-eval.json": "99868a1ac7cba250ee11f5a560a56d00920f9977095e985e3f2d3515ad50f18c",
+    "reuse/candidate-behavior-eval.json": "9eb89b38a64c7ed296bb4204fcfdc2d83e9cfa4dc677302f3f312eaa9b6fceb6",
+    "reuse/assessment.json": "8abcbc09fec319b41c52fc7f3ef74d7500cc134438c8fabf3a257673cb1e2cc2"
+  },
+  "exported_file_sha256": {
+    "reuse-1.3.0.json": "a22073697d9004c41f834b2729067b68c6601398e0e0bbbbb241013625e881f1",
+    "reuse-1.3.1.json": "75748a8b79a6ce00b6aedcda99bd6f8541d3ab88158e040e66787d57cca2b7b2",
+    "reuse-review.json": "bf05c871bb580212ed08496fec6d9116bd210366dfc88a130da165fc6b5b33e2",
+    "routing-1.2.2.json": "fe48478864f30b26219e5313f3b7fc33987436812e9322124d0b654276ea698b",
+    "routing-1.3.0.json": "b0be1cf1c9a15d7898f0bd5dfefb40061b7cf0a307dc7c0d94707f9782d57519"
+  },
+  "input_sha256": {
+    "tests/routing-cases.json": "fd974af1635cfbd4c01304765364f3547f109397de2081a609c8d5d548ed6795",
+    "tests/routing-criteria.json": "b8ce6fb0a226364f3690606ae01e531c9d2a39ae2dfbf0cc825364c6ce79acb0",
+    "tests/reuse-cases.json": "a21a471edc8ed90dbd43d81700163758efa8b2ffbd9b278d849484fbbd1a440f",
+    "tests/reuse-criteria.json": "50331f43f5558e653fb3b266220e6cf8deb4f02b788c21619e4e7c76f1f5bdb7"
+  }
+}
