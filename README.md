@@ -63,7 +63,7 @@ python -B tools/check_archive.py releases/吾日三省吾身_think3_1.3.2.zip
 
 ## 文件与版本导航
 
-- [维护约定](AGENTS.md)、[变更记录](CHANGELOG.md)、[版本与时间来源](docs/version-history.md)
+- [维护约定](AGENTS.md)、[持续维护](docs/maintenance.md)、[变更记录](CHANGELOG.md)、[版本与时间来源](docs/version-history.md)
 - [技能入口](skills/think3/SKILL.md)、[宿主配置](skills/think3/agents/openai.yaml)
 - [跨项目复盘](skills/think3/references/cross-project-review.md)、[表达参考](skills/think3/references/expression.md)
 - [跟踪工具](skills/think3/scripts/tracker.py)、[工具说明](skills/think3/references/tracker.md)、[随包版本记录](skills/think3/references/version-history.md)
